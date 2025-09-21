@@ -28,3 +28,9 @@ class StockMovementReportSerializer(serializers.Serializer):
     stock_in = serializers.IntegerField()
     stock_out = serializers.IntegerField()
     closing_stock = serializers.IntegerField()
+
+class DepreciationScheduleEntrySerializer(serializers.Serializer):
+    period_date = serializers.DateField()
+    monthly_depreciation = serializers.DecimalField(max_digits=18, decimal_places=0)
+    accumulated_depreciation = serializers.DecimalField(max_digits=18, decimal_places=0)
+    book_value = serializers.DecimalField(max_digits=18, decimal_places=0)

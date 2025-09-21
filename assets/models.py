@@ -49,6 +49,17 @@ class Computer(BaseModel):
                                             verbose_name="Phòng ban sử dụng")
     remark = models.TextField(blank=True, verbose_name="Ghi chú/Lý do")
 
+    useful_life = models.PositiveIntegerField(
+        default=3,
+        verbose_name="Vòng đời sử dụng (năm)"
+    )
+    salvage_value = models.DecimalField(
+        max_digits=18,
+        decimal_places=0,
+        default=0,
+        verbose_name="Giá trị thanh lý ước tính (VNĐ)"
+    )
+
     def __str__(self):
         return f"{self.computer_model} ({self.asset_tag})"
 

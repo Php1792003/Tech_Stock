@@ -1,5 +1,3 @@
-# sales/views.py (PHIÊN BẢN HOÀN CHỈNH)
-
 from rest_framework import viewsets, permissions, status, serializers
 from rest_framework.response import Response
 from .models import SalesInvoice

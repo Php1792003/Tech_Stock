@@ -1,5 +1,5 @@
 # reports/views.py (PHIÊN BẢN HOÀN CHỈNH)
-
+from dateutil.relativedelta import relativedelta
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, status
@@ -13,7 +13,8 @@ from assets.models import Computer, ComputerModel
 from sales.models import SalesInvoiceLine, SalesInvoice
 from inventory.models import Location, InventoryTxnLine
 
-from .serializers import InventoryReportSerializer, RevenueReportSerializer, StockMovementReportSerializer
+from .serializers import InventoryReportSerializer, RevenueReportSerializer, StockMovementReportSerializer, \
+    DepreciationScheduleEntrySerializer
 
 
 class InventoryReportAPIView(APIView):
@@ -153,3 +154,68 @@ class DashboardStatsAPIView(APIView):
         }
 
         return Response(data, status=status.HTTP_200_OK)
+
+
+class AssetDepreciationReportAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, computer_id, *args, **kwargs):
+        try:
+            computer = Computer.objects.get(pk=computer_id)
+        except Computer.DoesNotExist:
+            return Response({"error": "Tài sản không tồn tại."}, status=status.HTTP_404_NOT_FOUND)
+
+        if not computer.purchase_date or computer.useful_life <= 0:
+            return Response({
+                "error": "Tài sản thiếu thông tin Ngày mua hoặc Vòng đời sử dụng để tính khấu hao."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        original_cost = computer.purchase_price
+        salvage_value = computer.salvage_value
+        useful_life_months = computer.useful_life * 12
+
+        depreciable_base = original_cost - salvage_value
+        if depreciable_base < 0: depreciable_base = 0
+
+        monthly_depreciation = depreciable_base / useful_life_months
+
+        schedule = []
+        accumulated_depreciation = 0
+        current_date = computer.purchase_date
+
+        for month in range(1, useful_life_months + 1):
+            accumulated_depreciation += monthly_depreciation
+
+            if accumulated_depreciation > depreciable_base:
+                accumulated_depreciation = depreciable_base
+
+            book_value = original_cost - accumulated_depreciation
+
+            schedule.append({
+                "period_date": current_date,
+                "monthly_depreciation": monthly_depreciation,
+                "accumulated_depreciation": round(accumulated_depreciation, 0),
+                "book_value": round(book_value, 0)
+            })
+
+            current_date += relativedelta(months=1)
+
+        schedule_serializer = DepreciationScheduleEntrySerializer(schedule, many=True)
+
+        data = {
+            "asset_info": {
+                "id": computer.id,
+                "asset_tag": computer.asset_tag,
+                "name": str(computer.computer_model),
+            },
+            "depreciation_summary": {
+                "original_cost": original_cost,
+                "salvage_value": salvage_value,
+                "depreciable_base": depreciable_base,
+                "useful_life_years": computer.useful_life,
+                "monthly_depreciation": round(monthly_depreciation, 0),
+            },
+            "schedule": schedule_serializer.data
+        }
+
+        return Response(data)
