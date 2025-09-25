@@ -217,5 +217,139 @@ class AssetDepreciationReportAPIView(APIView):
             },
             "schedule": schedule_serializer.data
         }
+class AssetAssignmentReportView(APIView):
+    def get(self, request):
+        data = [
+            {
+                "employee_id": 101,
+                "employee_name": "Nguyen Van A",
+                "department": "IT",
+                "assigned_assets": [
+                    {
+                        "computer_id": 5,
+                        "asset_tag": "APPLE-MBP-001",
+                        "model": "Apple Macbook Pro 14 M3",
+                        "assigned_date": "2025-09-10",
+                        "status": "IN_USE"
+                    }
+                ]
+            },
+            {
+                "employee_id": 102,
+                "employee_name": "Tran Thi B",
+                "department": "Finance",
+                "assigned_assets": [
+                    {
+                        "computer_id": 8,
+                        "asset_tag": "DELL-LAT-002",
+                        "model": "Dell Latitude 7440",
+                        "assigned_date": "2025-08-25",
+                        "status": "IN_USE"
+                    }
+                ]
+            }
+        ]
+        return Response(data)
 
+class AssetMaintenanceReportView(APIView):
+    def get(self, request):
+        data = [
+            {
+                "computer_id": 12,
+                "asset_tag": "HP-ELITE-001",
+                "model": "HP EliteBook 840 G9",
+                "last_maintenance_date": "2025-08-15",
+                "next_maintenance_date": "2026-02-15",
+                "maintenance_history": [
+                    {
+                        "date": "2025-02-15",
+                        "type": "SCHEDULED",
+                        "description": "Bảo trì định kỳ 6 tháng",
+                        "cost": "500000"
+                    },
+                    {
+                        "date": "2025-08-15",
+                        "type": "REPAIR",
+                        "description": "Thay pin laptop",
+                        "cost": "1800000"
+                    }
+                ],
+                "total_maintenance_cost": "2300000",
+                "status": "IN_USE"
+            }
+        ]
+        return Response(data)
+
+class AssetDisposalReportView(APIView):
+    def get(self, request):
+        data = [
+            {
+                "computer_id": 20,
+                "asset_tag": "LENOVO-THINK-001",
+                "model": "Lenovo ThinkPad X1 Carbon Gen10",
+                "purchase_date": "2022-01-15",
+                "disposal_date": "2025-09-01",
+                "original_cost": "32000000",
+                "accumulated_depreciation": "24000000",
+                "book_value": "8000000",
+                "disposal_value": "7000000",
+                "loss_gain": "-1000000",
+                "disposal_method": "SALE",
+                "buyer": "Công ty ABC"
+            }
+        ]
+        return Response(data)
+
+class AssetUtilizationReportView(APIView):
+    def get(self, request):
+        data = [
+            {
+                "computer_id": 30,
+                "asset_tag": "DELL-OPT-001",
+                "model": "Dell OptiPlex 7090",
+                "assigned_to": "Nguyen Van A",
+                "department": "IT",
+                "utilization_rate": "85%",
+                "active_hours": 1700,
+                "idle_hours": 300,
+                "period": "2025-Q3",
+                "status": "IN_USE"
+            }
+        ]
+        return Response(data)
+
+class AssetWarrantyReportView(APIView):
+    def get(self, request):
+        data = [
+            {
+                "computer_id": 40,
+                "asset_tag": "MSI-GS66-001",
+                "model": "MSI GS66 Stealth",
+                "purchase_date": "2024-05-01",
+                "warranty_period_months": 24,
+                "warranty_expiry_date": "2026-05-01",
+                "vendor": "MSI Vietnam",
+                "support_contact": "support@msi.com",
+                "status": "VALID"
+            }
+        ]
+        return Response(data)
+
+class AssetCostAnalysisReportView(APIView):
+    def get(self, request):
+        data = [
+            {
+                "computer_id": 50,
+                "asset_tag": "HP-PRO-001",
+                "model": "HP ProBook 450 G9",
+                "purchase_date": "2023-03-15",
+                "original_cost": "25000000",
+                "maintenance_costs": "3000000",
+                "repair_costs": "1500000",
+                "depreciation_value": "8000000",
+                "disposal_value": "5000000",
+                "total_cost_of_ownership": "31500000",
+                "current_status": "IN_USE"
+            }
+        ]
         return Response(data)
